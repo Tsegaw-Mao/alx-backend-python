@@ -1,22 +1,7 @@
-import mysql.connector
+from itertools import islice
+stream_users = __import__('0-stream_users')
 
-def stream_users():
-    connection = mysql.connector.connect(
-        host="localhost",
-        user="your_mysql_username",
-        password="your_mysql_password",
-        database="ALX_prodev"
-    )
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM user_data")
+# iterate over the generator function and print only the first 6 rows
 
-    for row in cursor:
-        yield row
-
-    cursor.close()
-    connection.close()
-
-# Example usage
-if __name__ == "__main__":
-    for user in stream_users():
-        print(user)
+for user in islice(stream_users(), 6):
+    print(user)
