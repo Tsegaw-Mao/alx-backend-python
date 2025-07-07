@@ -1,7 +1,15 @@
-from itertools import islice
-stream_users = __import__('0-stream_users')
+import sqlite3  # Or use another DB connector like mysql.connector or psycopg2
 
-# iterate over the generator function and print only the first 6 rows
+def stream_users():
+    conn = sqlite3.connect('your_database.db')  # Replace with your DB
+    cursor = conn.cursor()
 
-for user in islice(stream_users(), 6):
+    cursor.execute("SELECT * FROM user_data")
+
+    for row in cursor:
+        yield row  # Yields one row at a time
+
+    cursor.close()
+    conn.close()
+for user in stream_users():
     print(user)
