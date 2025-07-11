@@ -2,7 +2,7 @@ import sqlite3
 import functools
 
 #### decorator to lof SQL queries
-# This code defines a decorator to log SQL queries and applies it to a function that fetches all users from a database.
+
 def log_queries(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
