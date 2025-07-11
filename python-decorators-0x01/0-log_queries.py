@@ -1,6 +1,6 @@
 import sqlite3
 import functools
-import datetime
+from datetime import datetime
 
 # Decorator to log SQL queries with timestamps
 def log_queries(func):
