@@ -1,6 +1,6 @@
-import datetime
 import sqlite3
 import functools
+from datetime import datetime  # Required for timestamp logging
 
 # Decorator to log SQL queries with timestamps
 def log_queries(func):
@@ -21,5 +21,7 @@ def fetch_all_users(query):
     conn.close()
     return results
 
-#### fetch users while logging the query
-users = fetch_all_users(query="SELECT * FROM users")
+# Test the function
+if __name__ == "__main__":
+    users = fetch_all_users(query="SELECT * FROM users")
+    print(users)
