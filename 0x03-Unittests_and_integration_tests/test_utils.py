@@ -23,7 +23,12 @@ class TestAccessNestedMap(unittest.TestCase):
         ({"a": {"b": 2}}, ("a",), {"b": 2}),
         ({"a": {"b": 2}}, ("a", "b"), 2),
     ])
-    def test_access_nested_map(self, nested_map: dict, path: Tuple[str, ...], expected: object) -> None:
+    def test_access_nested_map(
+        self,
+        nested_map: dict,
+        path: Tuple[str, ...],
+        expected: object
+    ) -> None:
         """
         Test access_nested_map returns correct value for given nested_map and path.
         """
@@ -33,7 +38,12 @@ class TestAccessNestedMap(unittest.TestCase):
         ({}, ("a",), "a"),
         ({"a": 1}, ("a", "b"), "b"),
     ])
-    def test_access_nested_map_exception(self, nested_map: dict, path: Tuple[str, ...], expected_key: str) -> None:
+    def test_access_nested_map_exception(
+        self,
+        nested_map: dict,
+        path: Tuple[str, ...],
+        expected_key: str
+    ) -> None:
         """
         Test access_nested_map raises KeyError with the expected key message.
         """
@@ -53,7 +63,8 @@ class TestGetJson(unittest.TestCase):
     ])
     def test_get_json(self, test_url: str, test_payload: Dict) -> None:
         """
-        Test that get_json returns the expected payload from a mocked HTTP GET call.
+        Test that get_json returns the expected payload from a mocked HTTP GET
+        call.
         """
         mock_response = Mock()
         mock_response.json.return_value = test_payload
@@ -92,11 +103,9 @@ class TestMemoize(unittest.TestCase):
 
         test_obj = TestClass()
         with patch.object(test_obj, "a_method", wraps=test_obj.a_method) as mock_method:
-            # Call a_property twice
             first = test_obj.a_property
             second = test_obj.a_property
 
-            # a_method should be called only once due to memoization
             mock_method.assert_called_once()
             self.assertEqual(first, 42)
             self.assertEqual(second, 42)
