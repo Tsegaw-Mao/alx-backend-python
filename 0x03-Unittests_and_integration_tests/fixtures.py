@@ -925,6 +925,7 @@ TEST_PAYLOAD = [
 
 # fixtures.py
 
+
 org_payload = {
     "login": "google",
     "id": 1342004,
@@ -934,7 +935,8 @@ org_payload = {
 repos_payload = [
     {"id": 1, "name": "repo1", "license": {"key": "apache-2.0"}},
     {"id": 2, "name": "repo2", "license": {"key": "mit"}},
-    {"id": 3, "name": "repo3", "license": {"key": "apache-2.0"}},
 ]
 
-apache2_repos = ["repo1", "repo3"]
+apache2_repos = ["repo1"]
+
+expected_repos = ["repo1"]

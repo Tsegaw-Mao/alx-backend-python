@@ -9,6 +9,8 @@ from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 import fixtures  # Assumed to be available
 
+from fixtures import org_payload, repos_payload, apache2_repos
+
 
 class TestGithubOrgClient(unittest.TestCase):
     """Test cases for GithubOrgClient class."""
