@@ -1,79 +1,49 @@
-from rest_framework import viewsets, status
+#!/usr/bin/env python3
+"""Views for the chats app."""
+
+from rest_framework import viewsets, filters as drf_filters
+from django_filters import rest_framework as filters
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.decorators import action
+
 from .models import Conversation, Message, User
 from .serializers import ConversationSerializer, MessageSerializer
-from rest_framework.exceptions import ValidationError
 
 
 class ConversationViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for viewing and creating Conversations.
-    """
+    """ViewSet for listing and creating Conversations."""
+
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    filter_backends = (drf_filters.SearchFilter, filters.DjangoFilterBackend)
+    search_fields = ['participants__email', 'participants__first_name']
+    filterset_fields = ['participants__user_id']
 
     def create(self, request, *args, **kwargs):
         """
-        Create a new conversation with a list of participant user IDs.
+        Create a new conversation with given participant user IDs.
         """
-        participants_ids = request.data.get('participants_ids')
-        if not participants_ids or not isinstance(participants_ids, list):
-            raise ValidationError(
-                {"participants_ids": "This field is required and must be a list of user IDs."}
-            )
-        participants = User.objects.filter(user_id__in=participants_ids)
-        if participants.count() != len(participants_ids):
-            raise ValidationError({"participants_ids": "One or more users not found."})
-
-        conversation = Conversation.objects.create()
-        conversation.participants.set(participants)
-        conversation.save()
-        serializer = self.get_serializer(conversation)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class MessageViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for viewing and sending Messages.
-    """
+    """ViewSet for listing and sending messages in conversations."""
+
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    filter_backends = (drf_filters.SearchFilter, filters.DjangoFilterBackend)
+    search_fields = ['message_body', 'sender__email']
+    filterset_fields = ['conversation__conversation_id', 'sender__user_id']
 
     def create(self, request, *args, **kwargs):
         """
-        Send a message to an existing conversation.
+        Send a new message to an existing conversation.
         """
-        sender_id = request.data.get('sender_id')
-        conversation_id = request.data.get('conversation_id')
-        message_body = request.data.get('message_body')
-
-        if not sender_id or not conversation_id or not message_body:
-            raise ValidationError(
-                {
-                    "detail": (
-                        "sender_id, conversation_id, and message_body "
-                        "are required fields."
-                    )
-                }
-            )
-
-        # Validate sender
-        try:
-            sender = User.objects.get(user_id=sender_id)
-        except User.DoesNotExist:
-            raise ValidationError({"sender_id": "Sender user does not exist."})
-
-        # Validate conversation
-        try:
-            conversation = Conversation.objects.get(conversation_id=conversation_id)
-        except Conversation.DoesNotExist:
-            raise ValidationError({"conversation_id": "Conversation does not exist."})
-
-        message = Message.objects.create(
-            sender=sender,
-            conversation=conversation,
-            message_body=message_body
-        )
-        serializer = self.get_serializer(message)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
