@@ -925,11 +925,10 @@ TEST_PAYLOAD = [
 
 # fixtures.py
 
-
 org_payload = {
     "login": "google",
     "id": 1342004,
-    "url": "https://api.github.com/orgs/google",
+    "url": "https://api.github.com/orgs/google"
 }
 
 repos_payload = [
