@@ -11,21 +11,25 @@ import fixtures  # Assumed to be available
 
 
 class TestGithubOrgClient(unittest.TestCase):
-    """Test GithubOrgClient class."""
+    """Tests for GithubOrgClient."""
 
-    @parameterized.expand([("google",), ("abc",)])
-    @patch("client.get_json")
+    @parameterized.expand([
+        ("google",),
+        ("abc",)
+    ])
+    @patch('client.get_json')
     def test_org(self, org_name, mock_get_json):
-        """Test that org method returns expected result."""
-        # Setup mock to return a fake dict
-        mock_get_json.return_value = {"login": org_name}
+        """Test org returns expected value and calls get_json once."""
+        expected = {"login": org_name}
+        mock_get_json.return_value = expected
 
         client = GithubOrgClient(org_name)
         result = client.org
 
         mock_get_json.assert_called_once_with(
-            f"https://api.github.com/orgs/{org_name}")
-        self.assertEqual(result, {"login": org_name})
+            f"https://api.github.com/orgs/{org_name}"
+        )
+        self.assertEqual(result, expected)
 
     def test_public_repos_url(self) -> None:
         """
