@@ -17,7 +17,7 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     @patch('client.get_json')
     def test_org(self, org_name, mock_get_json):
-        """Test org method calls get_json once with correct URL."""
+        """Test that org method calls get_json once with the right URL."""
         expected = {"login": org_name}
         mock_get_json.return_value = expected
 
