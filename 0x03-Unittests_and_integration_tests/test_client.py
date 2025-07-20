@@ -11,23 +11,21 @@ import fixtures  # Assumed to be available
 
 
 class TestGithubOrgClient(unittest.TestCase):
-    """Test cases for GithubOrgClient class."""
+    """Test GithubOrgClient class."""
 
-    @parameterized.expand([
-        ("google",),
-        ("abc",),
-    ])
-    @patch("client.get_json", autospec=True)
-    def test_org(self, org_name: str, mock_get_json: Mock) -> None:
-        """
-        Test GithubOrgClient.org returns expected result and
-        get_json is called once with the correct URL.
-        """
+    @parameterized.expand([("google",), ("abc",)])
+    @patch("client.get_json")
+    def test_org(self, org_name, mock_get_json):
+        """Test that org method returns expected result."""
+        # Setup mock to return a fake dict
+        mock_get_json.return_value = {"login": org_name}
+
         client = GithubOrgClient(org_name)
-        client.org()
+        result = client.org
+
         mock_get_json.assert_called_once_with(
-            f"https://api.github.com/orgs/{org_name}"
-        )
+            f"https://api.github.com/orgs/{org_name}")
+        self.assertEqual(result, {"login": org_name})
 
     def test_public_repos_url(self) -> None:
         """
@@ -38,10 +36,8 @@ class TestGithubOrgClient(unittest.TestCase):
         client = GithubOrgClient("google")
 
         with patch.object(
-            GithubOrgClient,
-            "org",
-            new_callable=PropertyMock,
-            return_value=payload
+            GithubOrgClient, "org",
+            new_callable=PropertyMock, return_value=payload
         ):
             self.assertEqual(client._public_repos_url, payload["repos_url"])
 
@@ -63,7 +59,7 @@ class TestGithubOrgClient(unittest.TestCase):
             GithubOrgClient,
             "_public_repos_url",
             new_callable=PropertyMock,
-            return_value="https://api.github.com/orgs/google/repos"
+            return_value="https://api.github.com/orgs/google/repos",
         ) as mock_public_url:
             repos = client.public_repos()
 
@@ -73,16 +69,14 @@ class TestGithubOrgClient(unittest.TestCase):
                 "https://api.github.com/orgs/google/repos"
             )
 
-    @parameterized.expand([
-        ({"license": {"key": "my_license"}}, "my_license", True),
-        ({"license": {"key": "other_license"}}, "my_license", False),
-    ])
-    def test_has_license(
-        self,
-        repo: Dict,
-        license_key: str,
-        expected: bool
-    ) -> None:
+    @parameterized.expand(
+        [
+            ({"license": {"key": "my_license"}}, "my_license", True),
+            ({"license": {"key": "other_license"}}, "my_license", False),
+        ]
+    )
+    def test_has_license(self, repo: Dict,
+                         license_key: str, expected: bool) -> None:
         """
         Test has_license returns correct boolean depending on if
         license_key matches the repo's license key.
@@ -100,7 +94,7 @@ class TestGithubOrgClient(unittest.TestCase):
             fixtures.expected_repos,
             fixtures.apache2_repos,
         )
-    ]
+    ],
 )
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos using fixtures."""
@@ -125,6 +119,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             return mock_resp
 
         # Add 'url' keys to fixture dictionaries for URL matching
+
         cls.org_payload["url"] = (
             f"https://api.github.com/orgs/"
             f"{cls.org_payload['payload']['login']}"
