@@ -10,16 +10,16 @@ from fixtures import repos_payload, apache2_repos
 class TestGithubOrgClient(unittest.TestCase):
     """Unit tests for GithubOrgClient"""
 
-    @patch("client.get_json")
+    @patch('client.get_json')
     def test_org(self, mock_get_json):
-        """Test that GithubOrgClient.org returns the correct payload"""
-        test_payload = {"login": "testorg"}
-        mock_get_json.return_value = test_payload
+        """Test GithubOrgClient.org returns the correct org data"""
+        expected_payload = {"login": "testorg"}
+        mock_get_json.return_value = expected_payload
 
         client = GithubOrgClient("testorg")
         result = client.org
 
-        self.assertEqual(result, test_payload)
+        self.assertEqual(result, expected_payload)
         mock_get_json.assert_called_once_with(
             "https://api.github.com/orgs/testorg"
             )
