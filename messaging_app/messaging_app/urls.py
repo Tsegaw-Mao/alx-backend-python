@@ -20,5 +20,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('chats.urls')),  # <-- include chats app API here
+    path('api/', include('chats.urls')),
+    path('api-auth/', include('rest_framework.urls')),  # Browsable API login/logout
 ]

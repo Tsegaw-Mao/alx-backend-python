@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""URL routing for the chats app."""
+"""Chats app URL configuration."""
 
+from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from rest_framework import routers
 from .views import ConversationViewSet, MessageViewSet
 
-router = routers.DefaultRouter()
-router.register(r'conversations', ConversationViewSet, basename='conversation')
-router.register(r'messages', MessageViewSet, basename='message')
+router = DefaultRouter()
+router.register(r'conversations', ConversationViewSet, basename='conversations')
+router.register(r'messages', MessageViewSet, basename='messages')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
 ]
