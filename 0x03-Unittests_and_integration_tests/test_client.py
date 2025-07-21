@@ -97,7 +97,7 @@ class TestGithubOrgClient(unittest.TestCase):
         # Ensure get_json was called once with the fake repos URL
         mock_get_json.assert_called_once_with(fake_repos_url)
 
-        @parameterized.expand([
+        parameterized.expand([
             (
                 {"license": {"key": "my_license"}},  # repo
                 "my_license",                        # license_key
@@ -109,6 +109,7 @@ class TestGithubOrgClient(unittest.TestCase):
                 False
             ),
         ])
+
         def test_has_license(
             self, repo: dict, license_key: str, expected: bool
         ) -> None:
