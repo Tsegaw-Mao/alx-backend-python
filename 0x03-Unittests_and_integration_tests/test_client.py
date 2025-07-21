@@ -97,33 +97,33 @@ class TestGithubOrgClient(unittest.TestCase):
         # Ensure get_json was called once with the fake repos URL
         mock_get_json.assert_called_once_with(fake_repos_url)
 
-        parameterized.expand([
-            (
-                {"license": {"key": "my_license"}},  # repo
-                "my_license",                        # license_key
-                True                                 # expected
-            ),
-            (
-                {"license": {"key": "other_license"}},
-                "my_license",
-                False
-            ),
-        ])
+    parameterized.expand([
+        (
+            {"license": {"key": "my_license"}},  # repo
+            "my_license",                        # license_key
+            True                                 # expected
+        ),
+        (
+            {"license": {"key": "other_license"}},
+            "my_license",
+            False
+        ),
+    ])
+    @patch("client.get_json")
+    def test_has_license(
+        self, repo: Dict[str, Dict], license_key: str, expected: bool
+    ) -> None:
+        """
+        Test GithubOrgClient.has_license returns True if the repo has the
+        given license key, otherwise False.
 
-        def test_has_license(
-            self, repo: Dict[str, Dict], license_key: str, expected: bool
-        ) -> None:
-            """
-            Test GithubOrgClient.has_license returns True if the repo has the
-            given license key, otherwise False.
-
-            Args:
-                repo (dict): The repository metadata.
-                license_key (str): The license key to check for.
-                expected (bool): The expected result.
-            """
-            result = GithubOrgClient.has_license(repo, license_key)
-            self.assertEqual(result, expected)
+        Args:
+            repo (dict): The repository metadata.
+            license_key (str): The license key to check for.
+            expected (bool): The expected result.
+        """
+        result = GithubOrgClient.has_license(repo, license_key)
+        self.assertEqual(result, expected)
 
 
 if __name__ == "__main__":
