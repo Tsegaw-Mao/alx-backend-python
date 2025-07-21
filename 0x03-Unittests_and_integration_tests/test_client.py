@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Unittests and integration tests for GithubOrgClient."""
 import unittest
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, Mock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 import fixtures
@@ -34,15 +34,14 @@ class TestGithubOrgClient(unittest.TestCase):
         payload = {"repos_url": "https://api.github.com/orgs/test_org/repos"}
 
         with patch.object(GithubOrgClient, "org",
-                          New_callable=PropertyMock) as mock_org:
+                          new_callable=PropertyMock) as mock_org:
             mock_org.return_value = payload
             url = client._public_repos_url
             self.assertEqual(url, payload["repos_url"])
 
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
-        """Test public_repos returns repository
-        names without license filter."""
+        """Test public_repos returns repository names."""
         repos = [
             {"name": "repo1", "license": {"key": "apache-2.0"}},
             {"name": "repo2", "license": {"key": "mit"}},
@@ -82,29 +81,29 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-@parameterized_class(
-    "org_payload, repos_payload, expected_repos, apache2_repos",
-    [(
-        fixtures.org_payload,
-        fixtures.repos_payload,
-        fixtures.expected_repos,
-        fixtures.apache2_repos
-    )])
+@parameterized_class([
+    {
+        "org_payload": fixtures.org_payload,
+        "repos_payload": fixtures.repos_payload,
+        "expected_repos": fixtures.expected_repos,
+        "apache2_repos": fixtures.apache2_repos
+    }
+])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
 
     @classmethod
     def setUpClass(cls):
         """Patch requests.get to return org and repo payloads."""
-    cls.get_patcher = patch("requests.get", autospec=True)
-    mock_get = cls.get_patcher.start()
+        cls.get_patcher = patch("client.requests.get", autospec=True)
+        mock_get = cls.get_patcher.start()
 
-    def json_side_effect(url, *args, **kwargs):
-        if "orgs" in url:
-            return unittest.mock.Mock(json=lambda: cls.org_payload)
-        return unittest.mock.Mock(json=lambda: cls.repos_payload)
+        def json_side_effect(url, *args, **kwargs):
+            if "orgs" in url:
+                return Mock(json=lambda: cls.org_payload)
+            return Mock(json=lambda: cls.repos_payload)
 
-    mock_get.side_effect = json_side_effect
+        mock_get.side_effect = json_side_effect
 
     @classmethod
     def tearDownClass(cls):
