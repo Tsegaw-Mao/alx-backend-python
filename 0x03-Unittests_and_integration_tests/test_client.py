@@ -41,7 +41,8 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json):
-        """Test public_repos returns repository names without license filter."""
+        """Test public_repos returns repository
+        names without license filter."""
         repos = [
             {"name": "repo1", "license": {"key": "apache-2.0"}},
             {"name": "repo2", "license": {"key": "mit"}},
@@ -81,20 +82,20 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-@parameterized_class("org_payload, repos_payload, expected_repos, apache2_repos", [
-    (
+@parameterized_class(
+    "org_payload, repos_payload, expected_repos, apache2_repos",
+    [(
         fixtures.org_payload,
         fixtures.repos_payload,
         fixtures.expected_repos,
         fixtures.apache2_repos
-    )
-])
+    )])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
 
     @classmethod
     def setUpClass(cls):
-    """Patch requests.get to return org and repo payloads."""
+        """Patch requests.get to return org and repo payloads."""
     cls.get_patcher = patch("requests.get", autospec=True)
     mock_get = cls.get_patcher.start()
 
@@ -104,7 +105,6 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         return unittest.mock.Mock(json=lambda: cls.repos_payload)
 
     mock_get.side_effect = json_side_effect
-
 
     @classmethod
     def tearDownClass(cls):
