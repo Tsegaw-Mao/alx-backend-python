@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Unittests and integration tests for GithubOrgClient."""
+
 import unittest
-from unittest.mock import patch, PropertyMock, Mock
+from unittest.mock import patch
+from unittest.mock import PropertyMock
+from unittest.mock import Mock
 from parameterized import parameterized, parameterized_class
+from parameterized import parameterized_class
 from client import GithubOrgClient
 import fixtures
 
