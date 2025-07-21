@@ -925,18 +925,10 @@ TEST_PAYLOAD = [
 
 # fixtures.py
 
-
-org_payload = {
-    "login": "google",
-    "id": 1342004,
-    "url": "https://api.github.com/orgs/google"
-}
-
+org_payload = {"login": "google", "url": "https://api.github.com/orgs/google"}
 repos_payload = [
-    {"id": 1, "name": "repo1", "license": {"key": "apache-2.0"}},
-    {"id": 2, "name": "repo2", "license": {"key": "mit"}},
+    {"name": "apache_repo", "license": {"key": "apache-2.0"}},
+    {"name": "mit_repo", "license": {"key": "mit"}},
 ]
-
-apache2_repos = ["repo1"]
-
-expected_repos = ["repo1"]
+apache2_repos = ["apache_repo"]
+expected_repos = ["apache_repo", "mit_repo"]
