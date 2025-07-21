@@ -3,7 +3,7 @@
 
 import unittest
 from typing import Dict
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 from parameterized import parameterized
 from client import GithubOrgClient
 
@@ -57,6 +57,45 @@ class TestGithubOrgClient(unittest.TestCase):
             result = client._public_repos_url
 
         self.assertEqual(result, fake_repos_url)
+
+    @patch("client.get_json")
+    def test_public_repos(self, mock_get_json: unittest.mock.Mock) -> None:
+        """
+        Test GithubOrgClient.public_repos returns the expected list of
+        repository names based on a mocked payload.
+
+        Args:
+            mock_get_json (Mock): Mocked get_json function.
+        """
+        # Mocked repos payload returned by get_json
+        mocked_repos_payload = [
+            {"name": "repo1", "license": {"key": "mit"}},
+            {"name": "repo2", "license": {"key": "apache-2.0"}},
+            {"name": "repo3", "license": None},
+        ]
+        mock_get_json.return_value = mocked_repos_payload
+
+        fake_repos_url = "https://api.github.com/orgs/test-org/repos"
+
+        client = GithubOrgClient("test-org")
+
+        with patch.object(
+            type(client),
+            "_public_repos_url",
+            new_callable=PropertyMock,
+            return_value=fake_repos_url
+        ) as mock_public_repos_url:
+            repos = client.public_repos()
+
+        # Assert the returned repo names match those in mocked payload
+        expected_repo_names = ["repo1", "repo2", "repo3"]
+        assert repos == expected_repo_names
+
+        # Ensure _public_repos_url property was called once
+        mock_public_repos_url.assert_called_once()
+
+        # Ensure get_json was called once with the fake repos URL
+        mock_get_json.assert_called_once_with(fake_repos_url)
 
 
 if __name__ == "__main__":
