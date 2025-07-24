@@ -51,10 +51,17 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'chats.middleware.RestrictAccessByTimeMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',  # must be before yours
     'django.contrib.messages.middleware.MessageMiddleware',
     
     'chats.middleware.RequestLoggingMiddleware',  # ✅ must come after AuthenticationMiddleware
+    
+    
+    "chats.middleware.RequestLoggingMiddleware",  # ✅ must come after AuthenticationMiddleware
+    
+    "chats.middleware.OffensiveLanguageMiddleware",
+
 ]
 
 ROOT_URLCONF = 'messaging_app.urls'
