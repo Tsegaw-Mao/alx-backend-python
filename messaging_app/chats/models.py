@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 
 
 class User(AbstractUser):
@@ -83,8 +83,13 @@ class Message(models.Model):
         on_delete=models.CASCADE,
         related_name='messages'
     )
-    message_body = models.TextField(null=False)
-    sent_at = models.DateTimeField(auto_now_add=True)
+    message_body = models.TextField(
+        null=False
+    )
+    sent_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
         return f"Message from {self.sender.email} at {self.sent_at}"
+    
