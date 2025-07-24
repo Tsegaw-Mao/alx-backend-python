@@ -56,7 +56,7 @@ MIDDLEWARE = [
     "chats.middleware.RequestLoggingMiddleware",  # ✅ must come after AuthenticationMiddleware
     "chats.middleware.RequestLoggingMiddleware",  # ✅ must come after AuthenticationMiddleware
     "chats.middleware.OffensiveLanguageMiddleware",
-    'chats.middleware.RolePermissionMiddleware',
+    'chats.middleware.RolepermissionMiddleware',
 ]
 
 ROOT_URLCONF = "messaging_app.urls"

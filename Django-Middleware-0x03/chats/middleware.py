@@ -85,26 +85,28 @@ class OffensiveLanguageMiddleware:
         return ip
 
 
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        # Skip unauthenticated users (they'll be blocked by other middleware or views)
-        if not hasattr(request, "user") or not request.user.is_authenticated:
-            return self.get_response(request)
+        # Only proceed if the user is authenticated
+        if hasattr(request, "user") and request.user.is_authenticated:
+            # Example: restrict sensitive paths
+            protected_paths = ["/api/messages/", "/api/conversations/"]
 
-        # Example: Only restrict specific paths
-        protected_paths = ["/api/messages/", "/api/conversations/"]
-
-        if any(request.path.startswith(path) for path in protected_paths):
-            # Check role using Django permissions/groups or custom field
-            if not (
-                request.user.is_superuser
-                or request.user.groups.filter(name__in=["admin", "moderator"]).exists()
-            ):
-                return HttpResponseForbidden(
-                    "You do not have permission to perform this action."
+            if any(request.path.startswith(path) for path in protected_paths):
+                # Check if user is admin or moderator via group membership or is_superuser
+                is_authorized = (
+                    request.user.is_superuser
+                    or request.user.groups.filter(
+                        name__in=["admin", "moderator"]
+                    ).exists()
                 )
+
+                if not is_authorized:
+                    return HttpResponseForbidden(
+                        "403 Forbidden: Admin or Moderator access only."
+                    )
 
         return self.get_response(request)
