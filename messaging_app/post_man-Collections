@@ -1,0 +1,23 @@
+OperationalError at /api/token/
+no such table: chats_user
+Request Method:	POST
+Request URL:	http://127.0.0.1:8000/api/token/
+Django Version:	5.2.4
+Exception Type:	OperationalError
+Exception Value:	
+no such table: chats_user
+Exception Location:	/home/mao/.local/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py, line 360, in execute
+Raised during:	rest_framework_simplejwt.views.TokenObtainPairView
+Python Executable:	/usr/bin/python
+Python Version:	3.10.12
+Python Path:	
+['/home/mao/Documents/Private/ALX/Projects/alx-backend-python/messaging_app',
+ '/usr/lib/python310.zip',
+ '/usr/lib/python3.10',
+ '/usr/lib/python3.10/lib-dynload',
+ '/home/mao/.local/lib/python3.10/site-packages',
+ '/usr/local/lib/python3.10/dist-packages',
+ '/usr/lib/python3/dist-packages']
+Server time:	Thu, 24 Jul 2025 09:54:38 +0000
+
+--------------------------
