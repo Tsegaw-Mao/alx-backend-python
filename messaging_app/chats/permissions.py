@@ -3,17 +3,19 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class IsParticipantOfConversation(BasePermission):
     """
-    Custom permission to only allow conversation participants to access messages.
+    - All participants in a conversation can read (GET) and create (POST) messages.
+    - Only the sender of a message can update or delete it.
     """
 
-    def has_permission(self, request, view):
-        # Allow only authenticated users
-        return request.user and request.user.is_authenticated
-
     def has_object_permission(self, request, view, obj):
-        """
-        Only participants of the conversation can view, update, or delete messages.
-        Assumes `obj` is a Message instance that has a `.conversation` field
-        which has a `.participants` many-to-many or related field.
-        """
-        return request.user in obj.conversation.participants.all()
+        user = request.user
+
+        # Allow read and create for participants
+        if request.method in SAFE_METHODS or request.method == "POST":
+            return user in obj.conversation.participants.all()
+
+        # Only allow update/delete by the original sender
+        if request.method in ["PUT", "PATCH", "DELETE"]:
+            return user == obj.sender
+
+        return False
