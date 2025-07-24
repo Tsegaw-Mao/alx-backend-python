@@ -9,6 +9,10 @@ class IsParticipantOfConversation(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
+        
+        # Must be authenticated
+        if not user or not user.is_authenticated:
+            return False
 
         # Allow read and create for participants
         if request.method in SAFE_METHODS or request.method == "POST":
