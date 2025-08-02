@@ -15,3 +15,11 @@ urlpatterns = [
     path('', include(router.urls)),
     path("account/delete/", delete_user, name="delete_user"),
 ]
+
+def build_thread(message):
+    """Recursively builds a threaded conversation."""
+    thread = {
+        'message': message,
+        'replies': [build_thread(reply) for reply in message.replies.all()]
+    }
+    return thread

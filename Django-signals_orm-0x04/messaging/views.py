@@ -14,7 +14,9 @@ from .pagination import MessagePagination
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.db.models import Prefetch
 from django.contrib import messages
+from .utils import build_thread
 
 @login_required
 def delete_user(request):
@@ -24,6 +26,28 @@ def delete_user(request):
         messages.success(request, "Your account and all related data have been deleted.")
         return redirect("home")  # or a goodbye page
     return render(request, "account/delete_confirm.html")
+
+def get_threaded_messages(user):
+    # Get all top-level messages sent to or from the user
+    messages = Message.objects.filter(
+        parent_message__isnull=True
+    ).filter(
+        models.Q(sender=user) | models.Q(receiver=user)
+    ).select_related('sender', 'receiver').prefetch_related(
+        Prefetch('replies', queryset=Message.objects.select_related('sender', 'receiver'))
+    ).order_by('-timestamp')
+
+    return messages
+
+def message_thread_view(request):
+    top_level_messages = get_threaded_messages(request.user)
+    threads = [build_thread(msg) for msg in top_level_messages]
+
+    return render(request, 'messages/threaded_messages.html', {
+        'threads': threads
+    })
+
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer

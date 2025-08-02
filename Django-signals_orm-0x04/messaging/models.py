@@ -65,6 +65,13 @@ class Message(models.Model):
         on_delete=models.SET_NULL,
         related_name="edited_messages"
     )
+    parent_message = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        related_name='replies',
+        on_delete=models.CASCADE
+    )
 
 
     def __str__(self):
