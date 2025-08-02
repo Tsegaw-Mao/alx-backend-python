@@ -51,7 +51,7 @@ def message_thread_view(request, message_id):
         return HttpResponseForbidden("You are not part of this conversation")
 
     replies = get_threaded_messages(root_message)
-    sender = request.user
+    sender = Message.objects.filter(id=message_id).select_related('sender').first().sender
     return render(request, 'messaging/thread.html', {
         'root_message': root_message,
         'replies': replies,
