@@ -41,7 +41,7 @@ def get_threaded_messages(user):
 
 def message_thread_view(request):
     sender = request.user
-    top_level_messages = get_threaded_messages(request.user)
+    top_level_messages = get_threaded_messages(sender)
     threads = [build_thread(msg) for msg in top_level_messages]
 
     return render(request, 'messages/threaded_messages.html', {
