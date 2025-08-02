@@ -11,6 +11,20 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .filters import MessageFilter
 from .pagination import MessagePagination
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.shortcuts import redirect, render
+from django.contrib import messages
+
+@login_required
+def delete_user(request):
+    user = request.user
+    if request.method == "POST":
+        user.delete()
+        messages.success(request, "Your account and all related data have been deleted.")
+        return redirect("home")  # or a goodbye page
+    return render(request, "account/delete_confirm.html")
+
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
