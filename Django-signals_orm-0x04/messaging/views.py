@@ -40,15 +40,26 @@ def get_threaded_messages(user):
     return messages
 
 def message_thread_view(request):
-    sender = request.user
-    top_level_messages = get_threaded_messages(sender)
+    top_level_messages = get_threaded_messages(request.user)
     threads = [build_thread(msg) for msg in top_level_messages]
 
     return render(request, 'messages/threaded_messages.html', {
         'threads': threads
     })
 
-
+@login_required
+def send_message_view(request):
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user  # ✅ This line ensures sender is set
+            message.save()
+            return redirect('inbox')  # Replace with your redirect
+    else:
+        form = MessageForm()
+    
+    return render(request, 'messaging/send_message.html', {'form': form})
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
