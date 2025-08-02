@@ -81,6 +81,10 @@ def inbox_view(request):
         'id', 'sender', 'timestamp', 'content'
     )
     return render(request, 'messaging/inbox.html', {'messages': unread_messages})
+def conversation_view(request, conversation_id):
+    # Replace this with your actual message fetching logic
+    messages = Message.objects.filter(conversation_id=conversation_id).select_related('sender')
+    return render(request, 'messaging/conversation.html', {'messages': messages})
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
