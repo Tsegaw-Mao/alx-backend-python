@@ -39,27 +39,30 @@ def get_threaded_messages(user):
 
     return messages
 
-def message_thread_view(request):
-    top_level_messages = get_threaded_messages(request.user)
-    threads = [build_thread(msg) for msg in top_level_messages]
+@login_required
+def message_thread_view(request, message_id):
+    from .models import Message
+    root_message = Message.objects.select_related('sender', 'receiver').get(id=message_id)
 
-    return render(request, 'messages/threaded_messages.html', {
-        'threads': threads
+    if root_message.receiver != request.user and root_message.sender != request.user:
+        return HttpResponseForbidden("You are not part of this conversation")
+
+    replies = get_threaded_replies(root_message)
+
+    return render(request, 'messaging/thread.html', {
+        'root_message': root_message,
+        'replies': replies
     })
 
+
 @login_required
-def send_message_view(request):
-    if request.method == 'POST':
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.sender = request.user  # ✅ This line ensures sender is set
-            message.save()
-            return redirect('inbox')  # Replace with your redirect
-    else:
-        form = MessageForm()
-    
-    return render(request, 'messaging/send_message.html', {'form': form})
+def inbox_view(request):
+    # Fetch root messages (messages that are not replies)
+    messages = Message.objects.filter(receiver=request.user, parent_message__isnull=True)\
+        .select_related('sender', 'receiver')\
+        .prefetch_related('replies')
+
+    return render(request, 'messaging/inbox.html', {'messages': messages})
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer

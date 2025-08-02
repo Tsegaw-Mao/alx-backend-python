@@ -23,3 +23,15 @@ def build_thread(message):
         'replies': [build_thread(reply) for reply in message.replies.all()]
     }
     return thread
+
+def get_threaded_replies(message):
+    """Recursively gather replies to a message."""
+    replies = list(message.replies.all().select_related('sender'))
+    thread = []
+    for reply in replies:
+        children = get_threaded_replies(reply)
+        thread.append({
+            'message': reply,
+            'replies': children
+        })
+    return thread
