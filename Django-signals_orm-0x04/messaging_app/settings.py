@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django_filters',
      # default Django apps...
     'rest_framework',  # Django REST Framework
-    'chats',           # Your custom messaging app
+    'messaging',           # Your custom messaging app
     'rest_framework_simplejwt',
     
 ]
@@ -142,7 +142,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
-AUTH_USER_MODEL = 'chats.User'
+AUTH_USER_MODEL = 'messaging.User'
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
