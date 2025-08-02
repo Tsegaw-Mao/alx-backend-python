@@ -77,7 +77,9 @@ def unread_messages_view(request):
     })
 
 def inbox_view(request):
-    unread_messages = Message.unread.unread_for_user(request.user)
+    unread_messages = Message.objects.filter(receiver=request.user, read=False).only(
+        'id', 'sender', 'timestamp', 'content'
+    )
     return render(request, 'messaging/inbox.html', {'messages': unread_messages})
 
 class MessageViewSet(viewsets.ModelViewSet):
