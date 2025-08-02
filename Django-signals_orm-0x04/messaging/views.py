@@ -68,6 +68,14 @@ def inbox_view(request):
 
     return render(request, 'messaging/inbox.html', {'messages': messages})
 
+
+@login_required
+def unread_messages_view(request):
+    unread_messages = Message.unread.for_user(request.user)
+    return render(request, 'messaging/unread.html', {
+        'unread_messages': unread_messages
+    })
+
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]

@@ -51,6 +51,10 @@ class Conversation(models.Model):
     def __str__(self):
         return f"Conversation {self.conversation_id}"
 
+class UnreadMessagesManager(models.Manager):
+    def for_user(self, user):
+        return self.get_queryset().filter(receiver=user, read=False).only('id', 'sender', 'timestamp', 'content')
+
 
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)
@@ -65,6 +69,7 @@ class Message(models.Model):
         on_delete=models.SET_NULL,
         related_name="edited_messages"
     )
+    read = models.BooleanField(default=False)
     parent_message = models.ForeignKey(
         'self',
         null=True,
@@ -72,6 +77,8 @@ class Message(models.Model):
         related_name='replies',
         on_delete=models.CASCADE
     )
+    objects = models.Manager()  # default manager
+    unread = UnreadMessagesManager()  # custom manager
 
 
     def __str__(self):
