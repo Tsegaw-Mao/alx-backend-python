@@ -1,8 +1,11 @@
+from django.http import HttpResponseForbidden
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_403_FORBIDDEN
+
+from messaging_app.chats import models
 from .models import Message, Conversation
 from .serializers import MessageSerializer, ConversationSerializer
 from .permissions import IsParticipantOfConversation
@@ -48,10 +51,11 @@ def message_thread_view(request, message_id):
         return HttpResponseForbidden("You are not part of this conversation")
 
     replies = get_threaded_replies(root_message)
-
+    sender = request.user
     return render(request, 'messaging/thread.html', {
         'root_message': root_message,
-        'replies': replies
+        'replies': replies,
+        'sender': sender
     })
 
 
