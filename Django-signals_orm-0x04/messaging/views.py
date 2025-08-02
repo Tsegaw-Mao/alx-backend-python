@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.db.models import Prefetch
 from django.contrib import messages
-from .utils import build_thread
+#from .utils import build_thread
 
 @login_required
 def delete_user(request):
@@ -50,7 +50,7 @@ def message_thread_view(request, message_id):
     if root_message.receiver != request.user and root_message.sender != request.user:
         return HttpResponseForbidden("You are not part of this conversation")
 
-    replies = get_threaded_replies(root_message)
+    replies = get_threaded_messages(root_message)
     sender = request.user
     return render(request, 'messaging/thread.html', {
         'root_message': root_message,
