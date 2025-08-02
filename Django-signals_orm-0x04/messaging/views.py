@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.db.models import Prefetch
 from django.contrib import messages
+from django.views.decorators.cache import cache_page
 #from .utils import build_thread
 
 @login_required
@@ -81,10 +82,12 @@ def inbox_view(request):
         'id', 'sender', 'timestamp', 'content'
     )
     return render(request, 'messaging/inbox.html', {'messages': unread_messages})
+
+@cache_page(60)  # Cache for 60 seconds
 def conversation_view(request, conversation_id):
-    # Replace this with your actual message fetching logic
     messages = Message.objects.filter(conversation_id=conversation_id).select_related('sender')
     return render(request, 'messaging/conversation.html', {'messages': messages})
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
