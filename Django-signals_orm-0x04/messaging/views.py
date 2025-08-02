@@ -40,6 +40,7 @@ def get_threaded_messages(user):
     return messages
 
 def message_thread_view(request):
+    sender = request.user
     top_level_messages = get_threaded_messages(request.user)
     threads = [build_thread(msg) for msg in top_level_messages]
 
