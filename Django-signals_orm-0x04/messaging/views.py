@@ -31,12 +31,12 @@ def delete_user(request):
         return redirect("home")  # or a goodbye page
     return render(request, "account/delete_confirm.html")
 
-def get_threaded_messages(user):
+def get_threaded_messages(request, user):
     # Get all top-level messages sent to or from the user
     messages = Message.objects.filter(
         parent_message__isnull=True
     ).filter(
-        models.Q(sender=user) | models.Q(receiver=user)
+        models.Q(sender=request.user) | models.Q(receiver=user)
     ).select_related('sender', 'receiver').prefetch_related(
         Prefetch('replies', queryset=Message.objects.select_related('sender', 'receiver'))
     ).order_by('-timestamp')
