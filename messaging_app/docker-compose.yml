@@ -14,11 +14,11 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql  # <-- volume mount here
 
   web:
     build: .
-    command: python3 manage.py runserver
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
@@ -33,4 +33,4 @@ services:
       DB_PORT: 3306
 
 volumes:
-  mysql_data:
+  mysql_data:   # <-- declare the named volume here
