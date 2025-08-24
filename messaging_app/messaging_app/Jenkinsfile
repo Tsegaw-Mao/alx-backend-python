@@ -1,11 +1,14 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'python:3.12-slim'   // official Python image
+            args '-u root:root'        // run as root for pip install
+        }
+    }
     environment {
         VENV = "${WORKSPACE}/messaging_app/venv"
         DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -16,7 +19,6 @@ pipeline {
                 )
             }
         }
-
         stage('Setup Python Environment') {
             steps {
                 sh '''
@@ -27,7 +29,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Run Tests') {
             steps {
                 sh '''
@@ -41,7 +42,6 @@ pipeline {
                 }
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 dir('messaging_app') {
@@ -49,12 +49,11 @@ pipeline {
                 }
             }
         }
-
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: "${DOCKER_CREDENTIALS}", 
-                    usernameVariable: 'DOCKER_USER', 
+                    credentialsId: "${DOCKER_CREDENTIALS}",
+                    usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh '''
