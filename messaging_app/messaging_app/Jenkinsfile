@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        VENV = "${WORKSPACE}/messaging_app/venv"    // virtual environment folder
-        DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"  // replace with your Docker image name
+        VENV = "${WORKSPACE}/messaging_app/venv"
+        DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"
     }
 
     stages {
@@ -12,7 +12,7 @@ pipeline {
                 git(
                     branch: 'main',
                     url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git',
-                    credentialsId: 'github-token'   // replace with your Jenkins GitHub credential ID
+                    credentialsId: 'github-token'
                 )
             }
         }
@@ -64,9 +64,5 @@ pipeline {
                 }
             }
         }
-    }
-
-    triggers {
-        // manual build only
     }
 }
