@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        VENV = "${WORKSPACE}/venv"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git(
+                    url: 'https://github.com/<your-username>/<your-repo>.git',
+                    branch: 'main',
+                    credentialsId: 'github-credentials'
+                )
+            }
+        }
+
+        stage('Set up Python Environment') {
+            steps {
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                    . venv/bin/activate
+                    pytest --junitxml=reports/test-results.xml
+                '''
+            }
+            post {
+                always {
+                    junit 'reports/test-results.xml'
+                }
+            }
+        }
+    }
+
+    triggers {
+        // none → manual trigger only
+    }
+}
