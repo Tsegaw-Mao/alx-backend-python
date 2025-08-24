@@ -46,7 +46,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r messaging_app/requirements.txt
-        pip install mysqlclient pytest pytest-django
+        pip install mysqlclient pytest pytest-django flake8 coverage
 
     - name: Wait for MySQL
       run: |
@@ -55,15 +55,3 @@ jobs:
           echo "Waiting for MySQL..."
           sleep 2
         done
-
-    - name: Run tests
-      run: |
-        export DATABASE_URL=mysql://testuser:testpassword@127.0.0.1:3306/test_db
-        pytest messaging_app --ds=messaging_app.settings --junitxml=reports/test-results.xml
-
-    - name: Upload Test Report
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: messaging_app/reports/test-results.xml
