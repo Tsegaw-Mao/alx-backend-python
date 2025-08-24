@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         VENV = "${WORKSPACE}/messaging_app/venv"    // virtual environment folder
+        DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"  // replace with your Docker image name
     }
 
     stages {
@@ -11,7 +12,7 @@ pipeline {
                 git(
                     branch: 'main',
                     url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git',
-                    credentialsId: 'github-token'
+                    credentialsId: 'github-token'   // replace with your Jenkins GitHub credential ID
                 )
             }
         }
@@ -19,10 +20,10 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip3 install --upgrade pip
-                    pip3 install -r messaging_app/requirements.txt
+                    python3 -m venv ${VENV}
+                    . ${VENV}/bin/activate
+                    pip install --upgrade pip
+                    pip install -r messaging_app/requirements.txt
                 '''
             }
         }
@@ -30,7 +31,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    . venv/bin/activate
+                    . ${VENV}/bin/activate
                     pytest --junitxml=reports/test-results.xml
                 '''
             }
