@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         VENV = "${WORKSPACE}/messaging_app/venv"
-        DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"  // replace with your Docker image
+        DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"  // Replace with your Docker image
     }
 
     stages {
@@ -12,7 +12,7 @@ pipeline {
                 git(
                     branch: 'main',
                     url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git',
-                    credentialsId: 'github-token'   // replace with your Jenkins GitHub credential
+                    credentialsId: 'github-token'   // Replace with your GitHub credential
                 )
             }
         }
@@ -20,8 +20,6 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 sh '''
-                    # install python if missing (Debian/Ubuntu agents)
-                    command -v python3 >/dev/null 2>&1 || apt-get update && apt-get install -y python3 python3-venv python3-pip
                     python3 -m venv ${VENV}
                     . ${VENV}/bin/activate
                     pip install --upgrade pip
@@ -55,8 +53,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: "${DOCKER_CREDENTIALS}",
-                    usernameVariable: 'DOCKER_USER',
+                    credentialsId: "${DOCKER_CREDENTIALS}", 
+                    usernameVariable: 'DOCKER_USER', 
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh '''
