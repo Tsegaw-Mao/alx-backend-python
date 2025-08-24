@@ -1,0 +1,50 @@
+#!/bin/bash
+# kubctl-0x01 - Scale Django app and test performance in Kubernetes
+
+set -e  # Exit on error
+
+DEPLOYMENT_NAME="django-messaging-app"
+SERVICE_NAME="django-messaging-service"
+NAMESPACE="default"
+
+echo "=== Scaling Django app to 3 replicas ==="
+kubectl scale deployment $DEPLOYMENT_NAME --replicas=3 -n $NAMESPACE
+
+echo "=== Waiting for pods to be ready ==="
+kubectl rollout status deployment/$DEPLOYMENT_NAME -n $NAMESPACE
+
+echo "=== Verifying running pods ==="
+kubectl get pods -l app=django-messaging -n $NAMESPACE
+
+echo "=== Getting service cluster IP ==="
+CLUSTER_IP=$(kubectl get svc $SERVICE_NAME -n $NAMESPACE -o jsonpath='{.spec.clusterIP}')
+
+echo "Service is accessible at http://$CLUSTER_IP:8000"
+
+# 3. Load test using wrk
+if ! command -v wrk >/dev/null 2>&1; then
+  echo "wrk is not installed. Please install it first:"
+  echo "  - On Ubuntu: sudo apt-get install wrk"
+  echo "  - On MacOS: brew install wrk"
+  exit 1
+fi
+
+echo "=== Running load test with wrk (10s, 50 connections, 200 threads) ==="
+wrk -t200 -c50 -d10s http://$CLUSTER_IP:8000/
+
+# 4. Monitor resource usage
+echo "=== Monitoring resource usage ==="
+if ! command -v kubectl >/dev/null 2>&1; then
+  echo "kubectl not found!"
+  exit 1
+fi
+
+# Ensure metrics-server is installed
+if ! kubectl top nodes >/dev/null 2>&1; then
+  echo "⚠️  Metrics server not available. Please install it first:"
+  echo "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
+else
+  kubectl top pods -n $NAMESPACE
+fi
+
+echo "=== Script completed successfully! ==="

@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment files
+.env
+
+# Logs
+*.log
+
+# Node modules
+node_modules/
+
+# Build directories
+dist/
+build/
+
+db.sqlite3

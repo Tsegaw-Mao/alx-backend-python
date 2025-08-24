@@ -1,0 +1,7 @@
+Requirements:
+
+Docker
+
+This project is building upon the messaging app built in week 4. If you have not done that project, kindly go back
+
+Operating system: ubuntu 20.20

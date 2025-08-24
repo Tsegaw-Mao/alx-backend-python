@@ -1,0 +1,27 @@
+#!/bin/bash
+# kubctl-0x02 - Blue-Green Deployment Script for Django App
+
+set -e
+
+NAMESPACE="default"
+
+echo "=== Deploying BLUE version ==="
+kubectl apply -f blue_deployment.yaml -n $NAMESPACE
+
+echo "=== Deploying GREEN version ==="
+kubectl apply -f green_deployment.yaml -n $NAMESPACE
+
+echo "=== Applying Service (currently pointing to BLUE) ==="
+kubectl apply -f kubeservice.yaml -n $NAMESPACE
+
+echo "=== Waiting for deployments to roll out ==="
+kubectl rollout status deployment/django-blue -n $NAMESPACE
+kubectl rollout status deployment/django-green -n $NAMESPACE
+
+echo "=== Checking GREEN pod logs for errors ==="
+GREEN_POD=$(kubectl get pods -n $NAMESPACE -l "app=django-messaging,version=green" -o jsonpath='{.items[0].metadata.name}')
+kubectl logs $GREEN_POD -n $NAMESPACE --tail=50
+
+echo "=== All deployments applied. Service still routing to BLUE version. ==="
+echo "To switch traffic, edit kubeservice.yaml selector to 'version: green' and reapply:"
+echo "kubectl apply -f kubeservice.yaml"
