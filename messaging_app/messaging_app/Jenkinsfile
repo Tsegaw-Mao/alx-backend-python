@@ -2,18 +2,13 @@ pipeline {
     agent any
 
     environment {
-        VENV = "${WORKSPACE}/messaging_app/venv"
-        DOCKER_IMAGE = "your-dockerhub-username/messaging_app:latest"  // Replace with your Docker Hub repo
+        VENV = "${WORKSPACE}/venv"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git(
-                    branch: 'main',
-                    url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git',
-                    credentialsId: 'github-token'  // Jenkins GitHub credential
-                )
+                git branch: 'main', url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git'
             }
         }
 
@@ -41,29 +36,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                dir('messaging_app') {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'docker-hub-credentials',  // Jenkins Docker Hub credential
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push ${DOCKER_IMAGE}
-                    '''
-                }
-            }
-        }
     }
 
     post {
@@ -71,7 +43,7 @@ pipeline {
             echo "Pipeline completed successfully!"
         }
         failure {
-            echo "Pipeline failed. Check the logs for details."
+            echo "Pipeline failed. Check logs."
         }
     }
 }
