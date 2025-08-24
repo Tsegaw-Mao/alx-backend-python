@@ -2,27 +2,28 @@ pipeline {
     agent any
 
     environment {
-        VENV = "${WORKSPACE}/venv"
+        VENV = "${WORKSPACE}/venv"    // virtual environment folder
     }
 
     stages {
         stage('Checkout') {
             steps {
+                // Pull code from your GitHub repo
                 git(
                     url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git',
-                    branch: 'main',
-                    credentialsId: 'github-token'
+                    branch: 'main',                  // specify branch
+                    credentialsId: 'github-credentials' // add GitHub credentials in Jenkins
                 )
             }
         }
 
-        stage('Set up Python Environment') {
+        stage('Setup Python Environment') {
             steps {
                 sh '''
                     python3 -m venv venv
                     . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                    pip3 install --upgrade pip
+                    pip3 install -r requirements.txt
                 '''
             }
         }
@@ -36,6 +37,7 @@ pipeline {
             }
             post {
                 always {
+                    // Publish test results to Jenkins
                     junit 'reports/test-results.xml'
                 }
             }
@@ -43,6 +45,6 @@ pipeline {
     }
 
     triggers {
-        // none → manual trigger only
+        // no triggers → manual build only
     }
 }
