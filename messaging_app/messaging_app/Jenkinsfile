@@ -8,11 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Pull code from your GitHub repo  
-                git url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git',
-                git branch: 'main',                  // specify branch
-                git credentialsId: 'github-token' // add GitHub credentials in Jenkins
-                
+                git branch: 'main', url: 'https://github.com/Tsegaw-Mao/alx-backend-python.git', git credentialsId: 'github-token'
             }
         }
 
